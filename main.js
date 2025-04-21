@@ -3,7 +3,7 @@ const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 
 module.exports = async ({ req, log, error }) => {
-  const payload = JSON.parse(req.body);
+  const payload = req.body; // ✅ FIXED HERE
   const userId = payload.userId;
 
   const client = new sdk.Client();
@@ -26,8 +26,8 @@ module.exports = async ({ req, log, error }) => {
 
     // Store in DB
     await db.createDocument(
-      "[DATABASE_ID]",
-      "[COLLECTION_ID]",
+      "[DATABASE_ID]", // Replace with actual DB ID
+      "[COLLECTION_ID]", // Replace with actual Collection ID
       "unique()",
       {
         userId,
