@@ -66,6 +66,6 @@ module.exports = async ({ req, log, error }) => {
     log(`Verification email sent to ${email}`);
 
   } catch (err) {
-    error(`Error sending verification email: ${err.message}`);
+    error(`Error sending verification emails: ${err.message}`);
   }
 };
