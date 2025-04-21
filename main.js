@@ -3,7 +3,7 @@ const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 
 module.exports = async ({ req, log, error }) => {
-  const payload = req.body; // ✅ FIXED HERE
+  const payload = req.body; // ✅ FIXED: req.body is already an object
   const userId = payload.userId;
 
   const client = new sdk.Client();
@@ -21,19 +21,19 @@ module.exports = async ({ req, log, error }) => {
     const email = user.email;
 
     // Generate token (OTP or random string)
-    const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = Date.now() + 15 * 60 * 1000; // 15 mins
+    const token = crypto.randomBytes(32).toString("hex");
+    const expiresAt = Date.now() + 15 * 60 * 1000; // Token expires in 15 minutes
 
-    // Store in DB
+    // Store token in Appwrite Database
     await db.createDocument(
-      "[DATABASE_ID]", // Replace with actual DB ID
-      "[COLLECTION_ID]", // Replace with actual Collection ID
+      "[DATABASE_ID]", // Replace with your actual database ID
+      "[COLLECTION_ID]", // Replace with your actual collection ID
       "unique()",
       {
         userId,
         email,
         token,
-        expiresAt
+        expiresAt,
       }
     );
 
@@ -56,7 +56,7 @@ module.exports = async ({ req, log, error }) => {
       to: email,
       subject: "Verify Your Email",
       html: `
-        <p>Hi ${user.name || ''},</p>
+        <p>Hi ${user.name || ""},</p>
         <p>Click the link below to verify your email address:</p>
         <a href="${verifyUrl}">${verifyUrl}</a>
         <p>This link will expire in 15 minutes.</p>
@@ -64,8 +64,7 @@ module.exports = async ({ req, log, error }) => {
     });
 
     log(`Verification email sent to ${email}`);
-
   } catch (err) {
-    error(`Error sending verification emails: ${err.message}`);
+    error(`Error sending verification email: ${err.message}`);
   }
 };
